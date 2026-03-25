@@ -16,8 +16,10 @@ CREATE TABLE IF NOT EXISTS matches (
 CREATE TABLE IF NOT EXISTS flights (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     flight_number TEXT NOT NULL,
+    origin TEXT NOT NULL,
     destination TEXT NOT NULL,
     departure_time TEXT,
+    arrival_time TEXT,
     flight_status TEXT,
     airline TEXT,
     captured_at TEXT NOT NULL

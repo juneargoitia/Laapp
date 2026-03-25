@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.example</groupId>
+        <groupId>org.project</groupId>
         <artifactId>football-project</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>flight-scraper</artifactId>
+    <artifactId>travel-scapper</artifactId>
 
     <dependencies>
         <dependency>
