@@ -1,4 +1,4 @@
-package org.project;
+package org.project.control;
 
 public class FootballCliente {
 }

@@ -1,4 +1,4 @@
-package org.project;
+package org.project.persistence;
 
 public class FlightDatabase {
 }

@@ -1,26 +1,26 @@
 -- Módulo football-api
 CREATE TABLE IF NOT EXISTS matches (
     id INTEGER PRIMARY KEY,
-    local_team TEXT NOT NULL,
-    visitor_team TEXT NOT NULL,
-    score_local INTEGER,
-    score_visitor INTEGER,
+    localTeam TEXT NOT NULL,
+    visitorTeam TEXT NOT NULL,
+    scoreLocal INTEGER,
+    scoreVisitor INTEGER,
     matchday INTEGER,
-    match_status TEXT,
-    match_date TEXT,
+    matchStatus TEXT,
+    matchDate TEXT,
     competition TEXT,
-    captured_at TEXT NOT NULL
+    capturedAt TEXT NOT NULL
 );
 
 -- Módulo travel-scrapper
 CREATE TABLE IF NOT EXISTS flights (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    flight_number TEXT NOT NULL,
+    flightNumber TEXT NOT NULL,
     origin TEXT NOT NULL,
     destination TEXT NOT NULL,
-    departure_time TEXT,
-    arrival_time TEXT,
-    flight_status TEXT,
+    departureTime TEXT,
+    arrivalTime TEXT,
+    flightStatus TEXT,
     airline TEXT,
-    captured_at TEXT NOT NULL
+    capturedAt TEXT NOT NULL
 );
