@@ -1,17 +1,18 @@
 package org.project.model;
 
 public class FlightInfo {
-    private String flightNumber;
-    private String origin;
-    private String destination;
-    private String departureTime;
-    private String arrivalTime;
-    private String flightStatus;
-    private String capturedAt;
+    private final String flightNumber;
+    private final String origin;
+    private final String destination;
+    private final String departureTime;
+    private final String arrivalTime;
+    private final String flightStatus;
+    private final String airline;
+    private final String capturedAt;
 
     public FlightInfo(
-            String flightNumber, String origin, String destination,
-            String departureTime, String arrivalTime, String flightStatus, String capturedAt
+            String flightNumber, String origin, String destination, String departureTime,
+            String arrivalTime, String flightStatus, String airline, String capturedAt
     ) {
         this.flightNumber = flightNumber;
         this.origin = origin;
@@ -19,6 +20,7 @@ public class FlightInfo {
         this.departureTime = departureTime;
         this.arrivalTime = arrivalTime;
         this.flightStatus = flightStatus;
+        this.airline = airline;
         this.capturedAt = capturedAt;
     }
 
@@ -39,6 +41,9 @@ public class FlightInfo {
     }
     public String getFlightStatus() {
         return flightStatus;
+    }
+    public String getAirline() {
+        return airline;
     }
     public String getCapturedAt() {
         return capturedAt;
