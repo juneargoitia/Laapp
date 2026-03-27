@@ -7,6 +7,12 @@
     <groupId>org.project</groupId>
     <artifactId>football-project</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>football-api</module>
+        <module>travel-scrapper</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
