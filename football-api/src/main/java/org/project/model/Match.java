@@ -9,9 +9,13 @@ public class Match {
     private String matchDate;
     private String competition;
     private String capturedAt;
+    private int scoreHome;
+    private int scoreAway;
 
-    public Match(int id, String localTeam, String visitorTeam, String matchStatus,
-                 int matchday, String matchDate, String competition, String capturedAt) {
+    public Match(int id, String localTeam, String visitorTeam,
+                 String matchStatus, int matchday, String matchDate,
+                 String competition, String capturedAt,
+                 int scoreHome, int scoreAway) {
         this.id = id;
         this.localTeam = localTeam;
         this.visitorTeam = visitorTeam;
@@ -20,37 +24,18 @@ public class Match {
         this.matchDate = matchDate;
         this.competition = competition;
         this.capturedAt = capturedAt;
+        this.scoreHome = scoreHome;
+        this.scoreAway = scoreAway;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getLocalTeam() {
-        return localTeam;
-    }
-
-    public String getVisitorTeam() {
-        return visitorTeam;
-    }
-
-    public String getMatchStatus() {
-        return matchStatus;
-    }
-
-    public int getMatchday() {
-        return matchday;
-    }
-
-    public String getMatchDate() {
-        return matchDate;
-    }
-
-    public String getCompetition() {
-        return competition;
-    }
-
-    public String getCapturedAt() {
-        return capturedAt;
-    }
+    public int getId() { return id; }
+    public String getLocalTeam() { return localTeam; }
+    public String getVisitorTeam() { return visitorTeam; }
+    public String getMatchStatus() { return matchStatus; }
+    public int getMatchday() { return matchday; }
+    public String getMatchDate() { return matchDate; }
+    public String getCompetition() { return competition; }
+    public String getCapturedAt() { return capturedAt; }
+    public int getScoreHome() { return scoreHome; }
+    public int getScoreAway() { return scoreAway; }
 }

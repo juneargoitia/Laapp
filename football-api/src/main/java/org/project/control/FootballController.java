@@ -7,7 +7,6 @@ public class FootballController {
     private final FootballFeeder feeder;
     private final FootballStore store;
 
-    // El controlador recibe "herramientas" genéricas, no clases fijas
     public FootballController(FootballFeeder feeder, FootballStore store) {
         this.feeder = feeder;
         this.store = store;

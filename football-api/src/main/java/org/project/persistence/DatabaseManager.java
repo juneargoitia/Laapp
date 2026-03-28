@@ -11,14 +11,16 @@ public class DatabaseManager implements FootballStore {
     private void createTable() throws SQLException {
         String sql = """
                 CREATE TABLE IF NOT EXISTS matches (
-                    id INTEGER,
+                    id INTEGER PRIMARY KEY,
                     home_team TEXT,
                     away_team TEXT,
                     status TEXT,
                     matchday INTEGER,
                     utc_date TEXT,
                     competition TEXT,
-                    captured_at TEXT
+                    captured_at TEXT,
+                    score_home INTEGER,
+                    score_away INTEGER
                 );
                 """;
         try (Connection conn = DriverManager.getConnection(URL);
@@ -32,10 +34,11 @@ public class DatabaseManager implements FootballStore {
         try {
             createTable();
             String sql = """
-                INSERT INTO matches (id, home_team, away_team, status, matchday, utc_date, competition, captured_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                """;
-
+                    INSERT OR REPLACE INTO matches
+                    (id, home_team, away_team, status, matchday,
+                     utc_date, competition, captured_at, score_home, score_away)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """;
             try (Connection conn = DriverManager.getConnection(URL);
                  PreparedStatement stmt = conn.prepareStatement(sql)) {
                 for (Match m : matches) {
@@ -47,6 +50,8 @@ public class DatabaseManager implements FootballStore {
                     stmt.setString(6, m.getMatchDate());
                     stmt.setString(7, m.getCompetition());
                     stmt.setString(8, m.getCapturedAt());
+                    stmt.setInt(9, m.getScoreHome());
+                    stmt.setInt(10, m.getScoreAway());
                     stmt.addBatch();
                 }
                 stmt.executeBatch();
