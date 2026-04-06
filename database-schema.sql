@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS matches (
     visitorTeam TEXT NOT NULL,
     scoreLocal INTEGER,
     scoreVisitor INTEGER,
-    matchday INTEGER,
+    matchday TEXT,
     matchStatus TEXT,
     matchDate TEXT,
     competition TEXT,

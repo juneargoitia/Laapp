@@ -18,9 +18,12 @@ public class MatchParser {
             JsonObject m = element.getAsJsonObject();
 
             int id = m.get("id").getAsInt();
-            String utcDate = m.get("utcDate").getAsString();
             String status = m.get("status").getAsString();
-            int matchday = m.get("matchday").getAsInt();
+            String utcFullDate = m.get("utcDate").getAsString();
+            String[] parts = utcFullDate.split("T");
+
+            String matchday = parts[0];
+            String matchDate = parts[1].replace("Z", "");
 
             String homeTeam = m.getAsJsonObject("homeTeam")
                     .get("name").getAsString();
@@ -38,7 +41,7 @@ public class MatchParser {
                     .get("name").getAsString();
 
             matches.add(new Match(id, homeTeam, awayTeam, status,
-                    matchday, utcDate, competition,
+                    matchday, matchDate, competition,
                     capturedAt, scoreHome, scoreAway));
         }
         return matches;
