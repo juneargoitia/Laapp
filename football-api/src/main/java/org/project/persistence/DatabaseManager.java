@@ -11,7 +11,7 @@ public class DatabaseManager implements FootballStore {
     private void createTable() throws SQLException {
         String sql = """
                 CREATE TABLE IF NOT EXISTS matches (
-                    id INTEGER PRIMARY KEY,
+                    id INTEGER,
                     home_team TEXT,
                     away_team TEXT,
                     status TEXT,
@@ -34,7 +34,7 @@ public class DatabaseManager implements FootballStore {
         try {
             createTable();
             String sql = """
-                    INSERT OR REPLACE INTO matches
+                    INSERT INTO matches
                     (id, home_team, away_team, status, matchday,
                      utc_date, competition, captured_at, score_home, score_away)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
