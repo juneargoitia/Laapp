@@ -46,7 +46,7 @@ public class DatabaseManager implements FootballStore {
                     stmt.setString(2, m.getLocalTeam());
                     stmt.setString(3, m.getVisitorTeam());
                     stmt.setString(4, m.getMatchStatus());
-                    stmt.setInt(5, m.getMatchday());
+                    stmt.setString(5, m.getMatchday());
                     stmt.setString(6, m.getMatchDate());
                     stmt.setString(7, m.getCompetition());
                     stmt.setString(8, m.getCapturedAt());
