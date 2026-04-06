@@ -11,38 +11,60 @@ public class MatchParser {
         List<Match> matches = new ArrayList<>();
         String capturedAt = Instant.now().toString();
 
-        JsonObject root = JsonParser.parseString(json).getAsJsonObject();
-        JsonArray matchArray = root.getAsJsonArray("matches");
+        try {
+            JsonObject root = JsonParser.parseString(json).getAsJsonObject();
 
-        for (JsonElement element : matchArray) {
-            JsonObject m = element.getAsJsonObject();
+            String competitionName = "Champions League"; // Valor por defecto
+            if (root.has("competition") && root.getAsJsonObject("competition").has("name")) {
+                competitionName = root.getAsJsonObject("competition").get("name").getAsString();
+            }
 
-            int id = m.get("id").getAsInt();
-            String status = m.get("status").getAsString();
-            String utcFullDate = m.get("utcDate").getAsString();
-            String[] parts = utcFullDate.split("T");
+            JsonArray matchArray = root.getAsJsonArray("matches");
 
-            String matchday = parts[0];
-            String matchDate = parts[1].replace("Z", "");
+            for (JsonElement element : matchArray) {
+                JsonObject m = element.getAsJsonObject();
 
-            String homeTeam = m.getAsJsonObject("homeTeam")
-                    .get("name").getAsString();
-            String awayTeam = m.getAsJsonObject("awayTeam")
-                    .get("name").getAsString();
+                int id = m.get("id").getAsInt();
+                String status = m.get("status").getAsString();
+                String utcFullDate = m.get("utcDate").getAsString();
 
-            JsonObject score = m.getAsJsonObject("score");
-            JsonObject fullTime = score.getAsJsonObject("fullTime");
-            int scoreHome = fullTime.get("home").isJsonNull() ? 0
-                    : fullTime.get("home").getAsInt();
-            int scoreAway = fullTime.get("away").isJsonNull() ? 0
-                    : fullTime.get("away").getAsInt();
+                String[] parts = utcFullDate.split("T");
+                String matchday = parts[0];
+                String matchDate = parts[1].replace("Z", "");
 
-            String competition = m.getAsJsonObject("competition")
-                    .get("name").getAsString();
+                String homeTeam = "TBD"; // Por defecto "To Be Determined"
+                if (m.has("homeTeam") && !m.get("homeTeam").isJsonNull()) {
+                    JsonElement nameElement = m.getAsJsonObject("homeTeam").get("name");
+                    if (nameElement != null && !nameElement.isJsonNull()) {
+                        homeTeam = nameElement.getAsString();
+                    }
+                }
 
-            matches.add(new Match(id, homeTeam, awayTeam, status,
-                    matchday, matchDate, competition,
-                    capturedAt, scoreHome, scoreAway));
+                String awayTeam = "TBD";
+                if (m.has("awayTeam") && !m.get("awayTeam").isJsonNull()) {
+                    JsonElement nameElement = m.getAsJsonObject("awayTeam").get("name");
+                    if (nameElement != null && !nameElement.isJsonNull()) {
+                        awayTeam = nameElement.getAsString();
+                    }
+                }
+
+                int scoreHome = 0;
+                int scoreAway = 0;
+                if (m.has("score") && !m.get("score").isJsonNull()) {
+                    JsonObject fullTime = m.getAsJsonObject("score").getAsJsonObject("fullTime");
+                    if (fullTime != null) {
+                        scoreHome = fullTime.get("home").isJsonNull() ? 0 : fullTime.get("home").getAsInt();
+                        scoreAway = fullTime.get("away").isJsonNull() ? 0 : fullTime.get("away").getAsInt();
+                    }
+                }
+
+                matches.add(new Match(id, homeTeam, awayTeam, status,
+                        matchday, matchDate, competitionName,
+                        capturedAt, scoreHome, scoreAway));
+            }
+        } catch (Exception e) {
+            System.err.println("Error procesando el JSON: " + e.getMessage());
+            e.printStackTrace();
         }
         return matches;
     }

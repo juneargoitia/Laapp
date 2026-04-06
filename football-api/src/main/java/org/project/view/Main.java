@@ -4,6 +4,7 @@ import org.project.client.FootballCliente;
 import org.project.control.FootballController;
 import org.project.control.FootballStore;
 import org.project.persistence.DatabaseManager;
+import org.project.persistence.AirportManager; // 1. IMPORTANTE: Añade el import
 import org.project.control.FootballFeeder;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -11,6 +12,10 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) {
+        AirportManager airportManager = new AirportManager();
+        airportManager.seedAirports();
+        airportManager.seedAirports();
+
         FootballFeeder feeder = new FootballCliente();
         FootballStore store = new DatabaseManager();
 
