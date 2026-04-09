@@ -14,7 +14,7 @@ public class MatchParser {
         try {
             JsonObject root = JsonParser.parseString(json).getAsJsonObject();
 
-            String competitionName = "Champions League"; // Valor por defecto
+            String competitionName = "Champions League";
             if (root.has("competition") && root.getAsJsonObject("competition").has("name")) {
                 competitionName = root.getAsJsonObject("competition").get("name").getAsString();
             }
@@ -30,9 +30,9 @@ public class MatchParser {
 
                 String[] parts = utcFullDate.split("T");
                 String matchday = parts[0];
-                String matchDate = parts[1].replace("Z", "");
+                String matchTime = parts[1].replace("Z", "");
 
-                String homeTeam = "TBD"; // Por defecto "To Be Determined"
+                String homeTeam = "TBD";
                 if (m.has("homeTeam") && !m.get("homeTeam").isJsonNull()) {
                     JsonElement nameElement = m.getAsJsonObject("homeTeam").get("name");
                     if (nameElement != null && !nameElement.isJsonNull()) {
@@ -59,7 +59,7 @@ public class MatchParser {
                 }
 
                 matches.add(new Match(id, homeTeam, awayTeam, status,
-                        matchday, matchDate, competitionName,
+                        matchday, matchTime, competitionName,
                         capturedAt, scoreHome, scoreAway));
             }
         } catch (Exception e) {

@@ -11,6 +11,7 @@ public class Match {
     private String capturedAt;
     private int scoreHome;
     private int scoreAway;
+    private String airportCode; // Nuevo campo
 
     public Match(int id, String localTeam, String visitorTeam,
                  String matchStatus, String matchday, String matchDate,
@@ -26,6 +27,7 @@ public class Match {
         this.capturedAt = capturedAt;
         this.scoreHome = scoreHome;
         this.scoreAway = scoreAway;
+        this.airportCode = ""; // Se asignará después
     }
 
     public int getId() { return id; }
@@ -38,4 +40,6 @@ public class Match {
     public String getCapturedAt() { return capturedAt; }
     public int getScoreHome() { return scoreHome; }
     public int getScoreAway() { return scoreAway; }
+    public String getAirportCode() { return airportCode; }
+    public void setAirportCode(String airportCode) { this.airportCode = airportCode; }
 }
