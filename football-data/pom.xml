@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.project</groupId>
-        <artifactId>football-project</artifactId>
+        <artifactId>Laapp</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>football-api</artifactId>
+    <artifactId>football-data</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

@@ -1,6 +1,6 @@
-package org.project.persistence;
+package org.project.infrastructure;
 
-import org.project.control.FlightStore;
+import org.project.core.FlightStore;
 import org.project.model.FlightInfo;
 import java.util.List;
 import java.sql.*;

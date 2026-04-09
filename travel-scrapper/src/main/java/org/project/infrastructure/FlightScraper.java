@@ -1,15 +1,16 @@
-package org.project.control;
+package org.project.infrastructure;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.project.core.FlightFeeder;
 import org.project.model.FlightInfo;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FlightScraper implements FlightFeeder{
+public class FlightScraper implements FlightFeeder {
 
     private static final String URL = "https://www.flightaware.com/live/all";
 

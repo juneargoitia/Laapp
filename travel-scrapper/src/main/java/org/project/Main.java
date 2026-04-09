@@ -1,10 +1,10 @@
-package org.project.view;
+package org.project;
 
-import org.project.control.FlightController;
-import org.project.control.FlightFeeder;
-import org.project.control.FlightStore;
-import org.project.control.FlightScraper;
-import org.project.persistence.FlightDatabase;
+import org.project.core.FlightController;
+import org.project.core.FlightFeeder;
+import org.project.core.FlightStore;
+import org.project.infrastructure.FlightScraper;
+import org.project.infrastructure.FlightDatabase;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;

@@ -1,4 +1,4 @@
-package org.project.parser;
+package org.project.infrastructure;
 
 import com.google.gson.*;
 import org.project.model.Match;

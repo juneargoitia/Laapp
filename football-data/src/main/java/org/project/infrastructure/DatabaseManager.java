@@ -1,6 +1,6 @@
-package org.project.persistence;
+package org.project.infrastructure;
 
-import org.project.control.FootballStore;
+import org.project.core.FootballStore;
 import org.project.model.Match;
 import java.sql.*;
 import java.util.HashMap;

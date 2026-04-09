@@ -1,17 +1,17 @@
-package org.project.view;
+package org.project;
 
-import org.project.client.FootballCliente;
-import org.project.control.FootballController;
-import org.project.control.FootballStore;
-import org.project.persistence.DatabaseManager;
-import org.project.control.FootballFeeder;
+import org.project.infrastructure.FootballClient;
+import org.project.core.FootballController;
+import org.project.core.FootballStore;
+import org.project.infrastructure.DatabaseManager;
+import org.project.core.FootballFeeder;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) {
-        FootballFeeder feeder = new FootballCliente();
+        FootballFeeder feeder = new FootballClient();
         FootballStore store = new DatabaseManager();
 
         FootballController controller = new FootballController(feeder, store);

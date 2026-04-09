@@ -1,16 +1,16 @@
-package org.project.client;
+package org.project.infrastructure;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.project.control.FootballFeeder;
+import org.project.core.FootballFeeder;
 import org.project.model.Match;
-import org.project.parser.MatchParser;
+
 import java.util.List;
 import java.util.ArrayList;
 
-public class FootballCliente implements FootballFeeder {
+public class FootballClient implements FootballFeeder {
     private static final String BASE_URL = "https://api.football-data.org/v4/competitions/";
 
     private static final String API_KEY = System.getenv("FOOTBALL_API_KEY");

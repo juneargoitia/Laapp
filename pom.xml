@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.project</groupId>
-    <artifactId>football-project</artifactId>
+    <artifactId>Laapp</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>football-api</module>
+        <module>football-data</module>
         <module>travel-scrapper</module>
     </modules>
 

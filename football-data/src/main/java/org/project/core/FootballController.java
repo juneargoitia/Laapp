@@ -1,4 +1,4 @@
-package org.project.control;
+package org.project.core;
 
 import org.project.model.Match;
 import java.util.List;

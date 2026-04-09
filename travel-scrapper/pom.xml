@@ -6,11 +6,11 @@
 
     <parent>
         <groupId>org.project</groupId>
-        <artifactId>football-project</artifactId>
+        <artifactId>Laapp</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>travel-scapper</artifactId>
+    <artifactId>travel-scrapper</artifactId>
 
     <dependencies>
         <dependency>
