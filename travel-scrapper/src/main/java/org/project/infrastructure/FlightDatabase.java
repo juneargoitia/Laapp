@@ -9,28 +9,39 @@ public class FlightDatabase implements FlightStore {
     private static final String URL = "jdbc:sqlite:flights.db";
 
     public FlightDatabase() {
+        createTable();
+    }
+    private void createTable() {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS flights (
+                db_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                flight_number TEXT,
+                origin TEXT,
+                destination TEXT,
+                departure_time TEXT,
+                arrival_time TEXT,
+                status TEXT,
+                airline TEXT,
+                captured_at TEXT
+            )
+            """;
+
         try (Connection conn = DriverManager.getConnection(URL);
              Statement stmt = conn.createStatement()) {
-            stmt.execute("""
-                CREATE TABLE IF NOT EXISTS flights (
-                    flight_number TEXT,
-                    origin TEXT,
-                    destination TEXT,
-                    departure_time TEXT,
-                    arrival_time TEXT,
-                    status TEXT,
-                    airline TEXT,
-                    captured_at TEXT
-                )
-                """);
+            stmt.execute(sql);
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error al crear la tabla flights: " + e.getMessage());
         }
     }
 
     @Override
     public void save(List<FlightInfo> flights) {
-        String sql = "INSERT INTO flights VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = """
+            INSERT INTO flights
+                (flight_number, origin, destination, departure_time, arrival_time, status, airline, captured_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """;
+
         try (Connection conn = DriverManager.getConnection(URL);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 

@@ -3,7 +3,7 @@ package org.project;
 import org.project.infrastructure.FootballClient;
 import org.project.core.FootballController;
 import org.project.core.FootballStore;
-import org.project.infrastructure.DatabaseManager;
+import org.project.infrastructure.FootballDatabase;
 import org.project.core.FootballFeeder;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class Main {
     public static void main(String[] args) {
         FootballFeeder feeder = new FootballClient();
-        FootballStore store = new DatabaseManager();
+        FootballStore store = new FootballDatabase();
 
         FootballController controller = new FootballController(feeder, store);
 
