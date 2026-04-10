@@ -1,6 +1,6 @@
-package org.project.core;
+package org.project.travelscrapper.core;
 
-import org.project.model.FlightInfo;
+import org.project.travelscrapper.model.FlightInfo;
 import java.util.List;
 
 public interface FlightFeeder {

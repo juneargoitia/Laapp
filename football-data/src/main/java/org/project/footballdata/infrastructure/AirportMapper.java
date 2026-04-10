@@ -1,4 +1,4 @@
-package org.project.infrastructure;
+package org.project.footballdata.infrastructure;
 
 import java.util.HashMap;
 import java.util.Map;

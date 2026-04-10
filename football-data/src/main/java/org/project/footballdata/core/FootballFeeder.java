@@ -1,6 +1,6 @@
-package org.project.core;
+package org.project.footballdata.core;
 
-import org.project.model.Match;
+import org.project.footballdata.model.Match;
 import java.util.List;
 
 public interface FootballFeeder {

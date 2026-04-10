@@ -1,4 +1,4 @@
-package org.project.model;
+package org.project.footballdata.model;
 
 public class Match {
     private int id;

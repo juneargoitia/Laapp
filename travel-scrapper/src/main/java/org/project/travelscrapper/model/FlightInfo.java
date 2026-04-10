@@ -1,4 +1,4 @@
-package org.project.model;
+package org.project.travelscrapper.model;
 
 public class FlightInfo {
     private final String flightNumber;

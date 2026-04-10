@@ -1,11 +1,11 @@
-package org.project.infrastructure;
+package org.project.footballdata.infrastructure;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.project.core.FootballFeeder;
-import org.project.model.Match;
+import org.project.footballdata.core.FootballFeeder;
+import org.project.footballdata.model.Match;
 
 import java.util.List;
 import java.util.ArrayList;

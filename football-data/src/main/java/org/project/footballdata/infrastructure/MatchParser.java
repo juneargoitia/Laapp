@@ -1,7 +1,7 @@
-package org.project.infrastructure;
+package org.project.footballdata.infrastructure;
 
 import com.google.gson.*;
-import org.project.model.Match;
+import org.project.footballdata.model.Match;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;

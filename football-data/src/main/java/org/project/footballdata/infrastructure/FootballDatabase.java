@@ -1,7 +1,7 @@
-package org.project.infrastructure;
+package org.project.footballdata.infrastructure;
 
-import org.project.core.FootballStore;
-import org.project.model.Match;
+import org.project.footballdata.core.FootballStore;
+import org.project.footballdata.model.Match;
 import java.sql.*;
 import java.util.List;
 

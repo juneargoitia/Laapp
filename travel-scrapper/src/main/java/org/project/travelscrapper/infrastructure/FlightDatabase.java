@@ -1,7 +1,7 @@
-package org.project.infrastructure;
+package org.project.travelscrapper.infrastructure;
 
-import org.project.core.FlightStore;
-import org.project.model.FlightInfo;
+import org.project.travelscrapper.core.FlightStore;
+import org.project.travelscrapper.model.FlightInfo;
 import java.util.List;
 import java.sql.*;
 

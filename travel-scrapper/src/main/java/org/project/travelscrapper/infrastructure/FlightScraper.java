@@ -1,11 +1,11 @@
-package org.project.infrastructure;
+package org.project.travelscrapper.infrastructure;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.project.core.FlightFeeder;
-import org.project.model.FlightInfo;
+import org.project.travelscrapper.core.FlightFeeder;
+import org.project.travelscrapper.model.FlightInfo;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;

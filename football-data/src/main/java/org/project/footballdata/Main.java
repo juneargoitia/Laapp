@@ -1,10 +1,10 @@
-package org.project;
+package org.project.footballdata;
 
-import org.project.infrastructure.FootballClient;
-import org.project.core.FootballController;
-import org.project.core.FootballStore;
-import org.project.infrastructure.FootballDatabase;
-import org.project.core.FootballFeeder;
+import org.project.footballdata.infrastructure.FootballClient;
+import org.project.footballdata.core.FootballController;
+import org.project.footballdata.core.FootballStore;
+import org.project.footballdata.infrastructure.FootballDatabase;
+import org.project.footballdata.core.FootballFeeder;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
