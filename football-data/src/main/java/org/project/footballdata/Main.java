@@ -13,6 +13,7 @@ public class Main {
     public static void main(String[] args) {
         FootballFeeder feeder = new FootballClient();
         FootballStore store = new FootballPublisher();
+
         FootballController controller = new FootballController(feeder, store);
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);

@@ -4,7 +4,7 @@ import org.project.travelscrapper.core.FlightController;
 import org.project.travelscrapper.core.FlightFeeder;
 import org.project.travelscrapper.core.FlightStore;
 import org.project.travelscrapper.infrastructure.FlightScraper;
-import org.project.travelscrapper.infrastructure.FlightDatabase;
+import org.project.travelscrapper.infrastructure.FlightPublisher;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class Main {
     public static void main(String[] args) {
         FlightFeeder feeder = new FlightScraper();
-        FlightStore store = new FlightDatabase();
+        FlightStore store = new FlightPublisher();
         FlightController controller = new FlightController(feeder, store);
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);

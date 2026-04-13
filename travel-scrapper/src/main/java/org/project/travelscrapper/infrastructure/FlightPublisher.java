@@ -2,18 +2,20 @@ package org.project.travelscrapper.infrastructure;
 
 import com.google.gson.Gson;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.project.travelscrapper.core.FlightStore;
 import org.project.travelscrapper.model.FlightEvent;
 import org.project.travelscrapper.model.FlightInfo;
 
 import javax.jms.*;
 import java.util.List;
 
-public class FlightPublisher {
+public class FlightPublisher implements FlightStore {
     private static final String brokerUrl = "tcp://localhost:61616";
     private static final String topicName = "Travel";
     private final Gson gson = new Gson();
 
-    public void publish(List<FlightInfo> flights) {
+    @Override
+    public void save(List<FlightInfo> flights) {
         Connection connection = null;
         try {
             ConnectionFactory factory = new ActiveMQConnectionFactory(brokerUrl);
@@ -39,7 +41,9 @@ public class FlightPublisher {
         } finally {
             try {
                 if (connection != null) connection.close();
-            } catch (JMSException e) { e.printStackTrace(); }
+            } catch (JMSException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

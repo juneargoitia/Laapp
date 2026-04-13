@@ -14,6 +14,7 @@ public class FootballPublisher implements FootballStore {
     private final String brokerUrl = "tcp://localhost:61616";
     private final String topicName = "Football";
     private final Gson gson = new Gson();
+    private final AirportMapper mapper = new AirportMapper();
 
     @Override
     public void save(List<Match> matches) {
@@ -28,6 +29,9 @@ public class FootballPublisher implements FootballStore {
             MessageProducer producer = session.createProducer(destination);
 
             for (Match m : matches) {
+                String code = mapper.getCode(m.getLocalTeam());
+                m.setAirportCode(code);
+
                 FootballEvent event = new FootballEvent(m);
                 String json = gson.toJson(event);
 

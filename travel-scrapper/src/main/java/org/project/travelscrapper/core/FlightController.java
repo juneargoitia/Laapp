@@ -17,7 +17,7 @@ public class FlightController {
         List<FlightInfo> flights = feeder.getFlights();
         if (flights != null && !flights.isEmpty()) {
             store.save(flights);
-            System.out.println(("Se han procesado" + flights.size() + "vuelos."));
+            System.out.println(("Se han procesado " + flights.size() + " vuelos."));
         } else {
             System.out.println(("No se han encontrado vuelos en esta ejecución."));
         }
