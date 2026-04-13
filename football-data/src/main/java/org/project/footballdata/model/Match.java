@@ -27,7 +27,7 @@ public class Match {
         this.capturedAt = capturedAt;
         this.scoreHome = scoreHome;
         this.scoreAway = scoreAway;
-        this.airportCode = ""; // Se asignará después
+        this.airportCode = "";
     }
 
     public int getId() { return id; }
