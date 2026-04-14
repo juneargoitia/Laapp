@@ -2,6 +2,9 @@ package org.project.footballdata.core;
 
 import org.project.footballdata.model.Match;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class FootballController {
     private final FootballFeeder feeder;
@@ -12,7 +15,19 @@ public class FootballController {
         this.store = store;
     }
 
-    public void run() {
+    public void start() {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        scheduler.scheduleAtFixedRate(() -> {
+            try {
+                execute();
+            } catch (Exception e) {
+                System.err.println("Error: " + e.getMessage());
+            }
+        }, 0, 1, TimeUnit.HOURS);
+    }
+
+    private void execute() {
         try {
             System.out.println("Iniciando...");
             List<Match> matches = feeder.getMatches();

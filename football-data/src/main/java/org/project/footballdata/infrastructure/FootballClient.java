@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class FootballClient implements FootballFeeder {
     private static final String BASE_URL = "https://api.football-data.org/v4/competitions/";
-    private static final String API_KEY = System.getenv("FOOTBALL_API_KEY");
+    private static final String API_KEY = "91066f0175b14ac696f23ecb7e68e792";
 
     private final OkHttpClient client = new OkHttpClient();
     private final MatchParser parser = new MatchParser();
