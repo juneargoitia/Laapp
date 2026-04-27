@@ -12,6 +12,7 @@
     <modules>
         <module>football-data</module>
         <module>travel-scrapper</module>
+        <module>business-unit</module>
     </modules>
 
     <properties>
