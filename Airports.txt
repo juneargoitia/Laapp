@@ -1,0 +1,38 @@
+Arsenal FC,LHR
+FC Bayern München,MUC
+Liverpool FC,LPL
+Tottenham Hotspur FC,STN
+FC Barcelona,BCN
+Chelsea FC,LGW
+Sporting CP,LIS
+Sporting Clube de Portugal,LIS
+Manchester City FC,MAN
+Real Madrid CF,MAD
+Inter Milan,MXP
+Paris Saint-Germain FC,CDG
+Newcastle United FC,NCL
+Juventus FC,TRN
+Club Atlético de Madrid,MAD
+Atalanta BC,BGY
+Bayer 04 Leverkusen,CGN
+Borussia Dortmund,DTM
+Olympiacos FC,ATH
+Club Brugge KV,OST
+Galatasaray SK,IST
+AS Monaco FC,NCE
+Qarabağ FK,GYD
+FK Bodø/Glimt,BOO
+SL Benfica,LIS
+Olympique de Marseille,MRS
+Pafos FC,PFO
+Union Saint-Gilloise,BRU
+PSV Eindhoven,EIN
+Athletic Club,BIO
+SSC Napoli,NAP
+FC Copenhagen,CPH
+AFC Ajax,AMS
+Eintracht Frankfurt,FRA
+SK Slavia Praha,PRG
+Villarreal CF,VLC
+FC Kairat,ALA
+Budapest,BUD
