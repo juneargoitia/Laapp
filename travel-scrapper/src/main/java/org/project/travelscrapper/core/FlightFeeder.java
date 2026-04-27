@@ -4,5 +4,5 @@ import org.project.travelscrapper.model.FlightInfo;
 import java.util.List;
 
 public interface FlightFeeder {
-    List<FlightInfo> getFlights();
+    List<FlightInfo> getFlights(String destinationCode);
 }

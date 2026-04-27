@@ -10,12 +10,12 @@ public class FlightController {
     private final FlightFeeder feeder;
     private final FlightStore store;
 
-    public FlightController(FlightFeeder feeder, FlightStore store){
+    public FlightController(FlightFeeder feeder, FlightStore store) {
         this.feeder = feeder;
         this.store = store;
     }
 
-    public void start(){
+    public void start() {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
         System.out.println(">>> Sistema de captura de VUELOS iniciado.");
@@ -31,7 +31,7 @@ public class FlightController {
 
     private void execute() {
         System.out.println(("Iniciando Scraping de vuelos..."));
-        List<FlightInfo> flights = feeder.getFlights();
+        List<FlightInfo> flights = feeder.getFlights("MAD");
         if (flights != null && !flights.isEmpty()) {
             store.save(flights);
             System.out.println(("Se han procesado " + flights.size() + " vuelos."));

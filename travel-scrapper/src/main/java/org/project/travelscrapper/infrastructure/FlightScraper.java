@@ -1,64 +1,81 @@
 package org.project.travelscrapper.infrastructure;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.project.travelscrapper.core.FlightFeeder;
 import org.project.travelscrapper.model.FlightInfo;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FlightScraper implements FlightFeeder {
 
-    private static final String URL = "https://www.flightaware.com/live/all";
+    private static final String URL = "https://www.google.com/travel/flights?q=Flights%20to%20LPA%20from%20MAD%20on%202026-05-20%20oneway";
 
     @Override
-    public List<FlightInfo> getFlights() {
+    public List<FlightInfo> getFlights(String destinationCode) {
         List<FlightInfo> flights = new ArrayList<>();
         String capturedAt = Instant.now().toString();
 
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless=new");
+        options.addArguments("--lang=es-ES");
+        options.addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36");
+
+        WebDriver driver = new ChromeDriver(options);
+
         try {
-            Document doc = Jsoup.connect(URL)
-                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-                    .header("Accept-Language", "es-ES,es;q=0.9")
-                    .timeout(15000)
-                    .get();
+            driver.get(URL);
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
 
-            Elements rows = doc.select("table.fullWidth tr");
+            try {
+                WebElement acceptBtn = wait.until(ExpectedConditions.elementToBeClickable(
+                        By.xpath("//button[contains(.,'Aceptar') or contains(.,'Accept')]")));
+                acceptBtn.click();
+            } catch (Exception ignored) {
+            }
 
-            for (Element row : rows) {
-                if (row.select("th").size() > 0) continue;
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//li[contains(@class, 'pI9Wbc')]")));
 
-                Elements cols = row.select("td");
-                if (cols.size() >= 4) {
-                    String ident = cols.get(0).text();
-                    String origin = cols.get(2).text();
-                    String destination = cols.get(3).text();
+            List<WebElement> rows = driver.findElements(By.xpath("//li[contains(@class, 'pI9Wbc')]"));
+
+            for (WebElement row : rows) {
+                try {
+                    String departureTime = row.findElement(By.xpath(".//span[contains(@aria-label, 'Salida')]")).getText();
+                    String arriveTime = row.findElement(By.xpath(".//span[contains(@aria-label, 'Llegada')]")).getText();
+                    String airline = row.findElement(By.xpath(".//div[contains(@class, 'sSHqbe')]")).getText();
+
+                    departureTime = departureTime.replaceAll("[^0-9:]", "");
+                    arriveTime = arriveTime.replaceAll("[^0-9:]", "");
 
                     flights.add(new FlightInfo(
-                            ident,
-                            origin,
-                            destination,
-                            "En vuelo",
-                            "Calculando",
-                            "LIVE",
-                            "Compañía",
+                            "G-" + (int) (Math.random() * 1000),
+                            "MAD",
+                            destinationCode,
+                            departureTime,
+                            arriveTime,
+                            "ON TIME",
+                            airline,
                             capturedAt
                     ));
+                } catch (Exception e) {
+                    continue;
                 }
             }
-
-            if (flights.isEmpty()) {
-                flights.add(new FlightInfo("IB3110", "MAD", "LPA", "18:00",
-                        "20:30", "ON TIME", "Iberia", capturedAt));
-            }
-
         } catch (Exception e) {
-            System.err.println("Error en FlightAware Scraper: " + e.getMessage());
-            flights.add(new FlightInfo("TEST-FLIGHT", "LPA", "TFN", "09:00",
-                    "09:30", "LANDED", "Binter", capturedAt));
+            System.err.println("Error en Scraper: " + e.getMessage());
+        } finally {
+            driver.quit();
+        }
+        if (flights.isEmpty()) {
+            flights.add(new FlightInfo("IB3110", "MAD", destinationCode, "10:30", "14:15", "ON TIME", "Iberia", capturedAt));
+            flights.add(new FlightInfo("VLG1512", "MAD", destinationCode, "16:00", "19:45", "DELAYED", "Vueling", capturedAt));
         }
         return flights;
     }
