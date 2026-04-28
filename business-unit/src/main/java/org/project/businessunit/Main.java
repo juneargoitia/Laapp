@@ -2,11 +2,14 @@ package org.project.businessunit;
 
 import org.project.businessunit.core.Datamart;
 import org.project.businessunit.infrastructure.Subscriber;
+import org.project.businessunit.infrastructure.RecordLoader;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Datamart datamart = new Datamart();
+        RecordLoader loader = new RecordLoader(datamart);
+        loader.loadHistoricalData();
         Subscriber rtSubscriber = new Subscriber(datamart);
 
         rtSubscriber.start();
