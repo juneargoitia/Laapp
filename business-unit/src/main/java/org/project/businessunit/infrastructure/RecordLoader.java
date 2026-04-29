@@ -4,17 +4,17 @@ import com.google.gson.Gson;
 import org.project.businessunit.core.Datamart;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
 public class RecordLoader {
-    private final String eventStorePath = "eventstore"; // Ruta raíz del Sprint 2
+    private final String eventStorePath = "eventstore";
     private final Datamart datamart;
     private final Gson gson = new Gson();
 
@@ -24,13 +24,8 @@ public class RecordLoader {
 
     public void loadHistoricalData() {
         System.out.println(">>> Cargando datos históricos desde el Event Store...");
-
-        // 1. Cargar Partidos
         loadFromTopic("Football");
-
-        // 2. Cargar Vuelos
         loadFromTopic("Travel");
-
         System.out.println(">>> Carga histórica completada.");
     }
 
@@ -38,7 +33,7 @@ public class RecordLoader {
         Path path = Paths.get(eventStorePath, topic);
         if (!Files.exists(path)) return;
 
-        try (Stream<Path> walk = Files.walk(path)) {
+        try (Stream<Path> walk = Files.walk(path, Integer.MAX_VALUE)) {
             walk.filter(Files::isRegularFile)
                     .filter(p -> p.toString().endsWith(".events"))
                     .forEach(this::readFile);
@@ -52,21 +47,32 @@ public class RecordLoader {
             String line;
             while ((line = br.readLine()) != null) {
                 Map event = gson.fromJson(line, Map.class);
+                if (event == null) continue;
 
-                // Determinamos qué tipo de evento es por la carpeta
                 if (filePath.toString().contains("Football")) {
                     Map match = (Map) event.get("match");
-                    datamart.updateMatch(match);
+                    if (match != null) {
+                        if (match.get("id") instanceof Double) {
+                            match.put("id", String.format("%.0f", (Double) match.get("id")));
+                        }
+                        String code = String.valueOf(match.get("airportCode")).toUpperCase();
+                        match.put("airportCode", code);
+                        datamart.updateMatch(match);
+                    }
                 } else if (filePath.toString().contains("Travel")) {
                     Map flight = (Map) event.get("flight");
-                    String dest = (String) flight.get("destination");
-                    List<Map<String, Object>> list = datamart.getFlightsFor(dest);
-                    list.add(flight);
-                    datamart.updateFlights(dest, list);
+                    if (flight != null) {
+                        String dest = String.valueOf(flight.get("destination")).toUpperCase();
+                        if (!dest.equals("null") && !dest.isEmpty()) {
+                            List<Map<String, Object>> list = new ArrayList<>(datamart.getFlightsFor(dest));
+                            list.add(flight);
+                            datamart.updateFlights(dest, list);
+                        }
+                    }
                 }
             }
         } catch (Exception e) {
-            System.err.println("Error leyendo archivo " + filePath + ": " + e.getMessage());
+                    System.err.println("Error leyendo archivo " + filePath + ": " + e.getMessage());
         }
     }
 }
