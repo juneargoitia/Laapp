@@ -1,21 +1,48 @@
 package org.project.travelscrapper.travelscrapper.core;
 
+import com.google.gson.Gson;
 import org.project.travelscrapper.travelscrapper.model.FlightInfo;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 public class FlightController {
     private final FlightFeeder feeder;
     private final FlightStore store;
+    private final Gson gson = new Gson();
 
-    // Plan gratuito de AviationStack: 1 peticion cada 60 segundos
     private static final int RATE_LIMIT_DELAY_MS = 65_000;
 
     public FlightController(FlightFeeder feeder, FlightStore store) {
         this.feeder = feeder;
         this.store = store;
+    }
+
+    public void processFootballEvent(String json) {
+        try {
+            Map event = gson.fromJson(json, Map.class);
+            Map match = (Map) event.get("match");
+
+            String airportCode = (String) match.get("airportCode");
+            String matchDateStr = (String) match.get("matchday");
+
+            if (airportCode != null && !airportCode.equals("N/A") && !airportCode.isEmpty()) {
+                System.out.println("\n[CONTROLLER] Evento recibido. Destino: "
+                        + airportCode + " | Fecha: " + matchDateStr);
+
+                if (matchDateStr != null && !matchDateStr.isEmpty()) {
+                    LocalDate matchDate = LocalDate.parse(matchDateStr.substring(0, 10));
+                    this.executeWithMatch(airportCode, matchDate);
+                } else {
+                    this.executeWithDestination(airportCode);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error al procesar el JSON del evento: " + e.getMessage());
+        }
+
     }
 
     private void esperarRateLimit() {
@@ -27,7 +54,6 @@ public class FlightController {
         }
     }
 
-    // Metodo original: busca solo para hoy sin margen de fechas
     public void executeWithDestination(String destinationCode) {
         System.out.println("Iniciando busqueda de vuelos Madrid -> " + destinationCode);
 
@@ -41,22 +67,18 @@ public class FlightController {
         }
     }
 
-    // Metodo con fecha del partido: busca ida (matchDate-2 hasta matchDate)
-    // y vuelta (matchDate hasta matchDate+2)
     public void executeWithMatch(String destinationCode, LocalDate matchDate) {
         System.out.println("Partido en " + destinationCode + " el " + matchDate
                 + ". Buscando vuelos con margen de +/- 2 dias...");
 
         List<FlightInfo> allFlights = new ArrayList<>();
 
-        // Vuelos de IDA: desde 2 dias antes hasta el dia del partido
         System.out.println("--- Vuelos de IDA (MAD -> " + destinationCode + ") ---");
         for (LocalDate date = matchDate.minusDays(2); !date.isAfter(matchDate); date = date.plusDays(1)) {
             allFlights.addAll(feeder.getFlights(destinationCode, date));
             esperarRateLimit();
         }
 
-        // Vuelos de VUELTA: desde el dia del partido hasta 2 dias despues
         System.out.println("--- Vuelos de VUELTA (" + destinationCode + " -> MAD) ---");
         for (LocalDate date = matchDate; !date.isAfter(matchDate.plusDays(2)); date = date.plusDays(1)) {
             allFlights.addAll(feeder.getFlights("MAD_RETURN_" + destinationCode, date));
