@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.project.travelscrapper.travelscrapper.core.FlightController;
 import javax.jms.*;
+import java.time.LocalDate;
 
 public class FootballEventListener {
     private final String brokerUrl = "tcp://localhost:61616";
@@ -31,16 +32,25 @@ public class FootballEventListener {
                 try {
                     if (message instanceof TextMessage) {
                         String json = ((TextMessage) message).getText();
-                        // Extraemos el código del aeropuerto del JSON del partido
-                        // Nota: Usamos un mapa simple para no tener que importar el modelo de fútbol
+
                         java.util.Map event = gson.fromJson(json, java.util.Map.class);
                         java.util.Map match = (java.util.Map) event.get("match");
+
                         String airportCode = (String) match.get("airportCode");
 
+                        String matchDateStr = (String) match.get("matchday");
+
                         if (airportCode != null && !airportCode.equals("N/A") && !airportCode.isEmpty()) {
-                            System.out.println("\n[EVENTO RECIBIDO] Nuevo partido detectado. Destino: " + airportCode);
-                            // Llamamos al controlador para que ejecute el scraping HACIA ese destino
-                            controller.executeWithDestination(airportCode);
+                            System.out.println("\n[EVENTO RECIBIDO] Partido detectado. Destino: "
+                                    + airportCode + " | Fecha: " + matchDateStr);
+
+                            if (matchDateStr != null && !matchDateStr.isEmpty()) {
+                                LocalDate matchDate = LocalDate.parse(matchDateStr.substring(0, 10));
+                                controller.executeWithMatch(airportCode, matchDate);
+                            } else {
+                                System.out.println("Advertencia: el evento no incluye fecha del partido. Buscando vuelos para hoy.");
+                                controller.executeWithDestination(airportCode);
+                            }
                         }
                     }
                 } catch (Exception e) {
