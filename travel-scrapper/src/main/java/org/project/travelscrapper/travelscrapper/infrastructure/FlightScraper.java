@@ -9,9 +9,12 @@ import java.net.http.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FlightScraper implements FlightFeeder {
+
+    private static final List<String> ALLOWED_AIRLINES = Arrays.asList("RYANAIR", "VUELING", "IBERIA");
 
     private String getApiKey() {
         String key = System.getenv("AERODATABOX_API_KEY");
@@ -36,11 +39,11 @@ public class FlightScraper implements FlightFeeder {
         String arrIata = isReturn ? "MAD" : destinationCode;
 
         List<FlightInfo> flights = new ArrayList<>();
-        // AeroDataBox permite maximo 12h por llamada, dividimos el dia en dos mitades
-        // Pequeno sleep entre llamadas para no superar el rate limit por segundo
+
         flights.addAll(fetchFlights(depIata, arrIata, date, "T00:00", "T11:59"));
         sleep(2000);
         flights.addAll(fetchFlights(depIata, arrIata, date, "T12:00", "T23:59"));
+
         return flights;
     }
 
@@ -69,8 +72,7 @@ public class FlightScraper implements FlightFeeder {
             HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
-                System.err.println("AeroDataBox error [" + response.statusCode() + "] para "
-                        + depIata + " -> " + arrIata + " el " + date + fromSuffix + ": " + response.body());
+                System.err.println("AeroDataBox error [" + response.statusCode() + "]");
                 return flights;
             }
 
@@ -80,6 +82,12 @@ public class FlightScraper implements FlightFeeder {
 
             for (JsonElement el : departures) {
                 JsonObject f = el.getAsJsonObject();
+
+                JsonObject airlineObj = f.getAsJsonObject("airline");
+                String airline = (airlineObj != null && airlineObj.has("name"))
+                        ? airlineObj.get("name").getAsString() : "N/A";
+
+                if (!isAllowed(airline)) continue;
 
                 JsonObject arrival = f.getAsJsonObject("arrival");
                 if (arrival == null) continue;
@@ -92,24 +100,8 @@ public class FlightScraper implements FlightFeeder {
 
                 String flightNumber = f.has("number") ? f.get("number").getAsString().replace(" ", "") : "N/A";
 
-                JsonObject airlineObj = f.getAsJsonObject("airline");
-                String airline = (airlineObj != null && airlineObj.has("name"))
-                        ? airlineObj.get("name").getAsString() : "N/A";
-
-                JsonObject dep = f.getAsJsonObject("departure");
-                String depTime = "N/A";
-                if (dep != null && dep.has("scheduledTime")) {
-                    JsonObject schedDep = dep.getAsJsonObject("scheduledTime");
-                    if (schedDep.has("local")) depTime = schedDep.get("local").getAsString();
-                    else if (schedDep.has("utc")) depTime = schedDep.get("utc").getAsString();
-                }
-
-                String arrTime = "N/A";
-                if (arrival.has("scheduledTime")) {
-                    JsonObject schedArr = arrival.getAsJsonObject("scheduledTime");
-                    if (schedArr.has("local")) arrTime = schedArr.get("local").getAsString();
-                    else if (schedArr.has("utc")) arrTime = schedArr.get("utc").getAsString();
-                }
+                String depTime = extractTime(f.getAsJsonObject("departure"));
+                String arrTime = extractTime(arrival);
 
                 String status = f.has("status") ? f.get("status").getAsString().toUpperCase() : "SCHEDULED";
 
@@ -117,15 +109,26 @@ public class FlightScraper implements FlightFeeder {
             }
 
             System.out.println(">>> [AeroDataBox] " + flights.size()
-                    + " vuelos " + depIata + " -> " + arrIata + " para el " + date + fromSuffix);
+                    + " vuelos filtrados (Iberia/Vueling/Ryanair) " + depIata + " -> " + arrIata);
 
-        } catch (IllegalStateException e) {
-            System.err.println(e.getMessage());
         } catch (Exception e) {
-            System.err.println("Error en AeroDataBox [" + depIata + " -> " + arrIata
-                    + " / " + date + fromSuffix + "]: " + e.getMessage());
+            System.err.println("Error en fetch: " + e.getMessage());
         }
 
         return flights;
+    }
+
+    private boolean isAllowed(String airlineName) {
+        String name = airlineName.toUpperCase();
+        return ALLOWED_AIRLINES.stream().anyMatch(name::contains);
+    }
+
+    private String extractTime(JsonObject obj) {
+        if (obj != null && obj.has("scheduledTime")) {
+            JsonObject sched = obj.getAsJsonObject("scheduledTime");
+            if (sched.has("local")) return sched.get("local").getAsString();
+            else if (sched.has("utc")) return sched.get("utc").getAsString();
+        }
+        return "N/A";
     }
 }

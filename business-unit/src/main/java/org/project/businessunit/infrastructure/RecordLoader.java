@@ -1,78 +1,82 @@
 package org.project.businessunit.infrastructure;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.project.businessunit.core.Datamart;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
+import org.project.businessunit.model.Flight;
+import org.project.businessunit.model.Match;
+import java.io.*;
 
 public class RecordLoader {
-    private final String eventStorePath = "eventstore";
     private final Datamart datamart;
-    private final Gson gson = new Gson();
 
     public RecordLoader(Datamart datamart) {
         this.datamart = datamart;
     }
 
-    public void loadHistoricalData() {
-        System.out.println(">>> Cargando datos históricos desde el Event Store...");
-        loadFromTopic("Football");
-        loadFromTopic("Travel");
-        System.out.println(">>> Carga histórica completada.");
+    public void loadAll(String path) {
+        File root = new File(path);
+        if (!root.exists()) {
+            System.out.println("(!) No se encontró la carpeta: " + path);
+            return;
+        }
+        process(root);
     }
 
-    private void loadFromTopic(String topic) {
-        Path path = Paths.get(eventStorePath, topic);
-        if (!Files.exists(path)) return;
-
-        try (Stream<Path> walk = Files.walk(path, Integer.MAX_VALUE)) {
-            walk.filter(Files::isRegularFile)
-                    .filter(p -> p.toString().endsWith(".events"))
-                    .forEach(this::readFile);
-        } catch (Exception e) {
-            System.err.println("Error accediendo al Event Store de " + topic + ": " + e.getMessage());
+    private void process(File file) {
+        if (file.isDirectory()) {
+            File[] children = file.listFiles();
+            if (children != null) {
+                for (File child : children) process(child);
+            }
+        } else if (file.getName().endsWith(".events")) {
+            loadFile(file);
         }
     }
 
-    private void readFile(Path filePath) {
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath.toFile()))) {
+    private void loadFile(File file) {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
-                Map event = gson.fromJson(line, Map.class);
-                if (event == null) continue;
+                if (line.trim().isEmpty()) continue; // Salta líneas vacías
 
-                if (filePath.toString().contains("Football")) {
-                    Map match = (Map) event.get("match");
-                    if (match != null) {
-                        if (match.get("id") instanceof Double) {
-                            match.put("id", String.format("%.0f", (Double) match.get("id")));
-                        }
-                        String code = String.valueOf(match.get("airportCode")).toUpperCase();
-                        match.put("airportCode", code);
-                        datamart.updateMatch(match);
-                    }
-                } else if (filePath.toString().contains("Travel")) {
-                    Map flight = (Map) event.get("flight");
-                    if (flight != null) {
-                        String dest = String.valueOf(flight.get("destination")).toUpperCase();
-                        if (!dest.equals("null") && !dest.isEmpty()) {
-                            List<Map<String, Object>> list = new ArrayList<>(datamart.getFlightsFor(dest));
-                            list.add(flight);
-                            datamart.updateFlights(dest, list);
-                        }
-                    }
+                JsonObject json = JsonParser.parseString(line).getAsJsonObject();
+                if (!json.has("ss")) continue; // Si no tiene 'ss', no sabemos qué es
+
+                String source = json.get("ss").getAsString();
+
+                if (source.equals("football-feeder") && json.has("match")) {
+                    JsonObject m = json.getAsJsonObject("match");
+                    // Usamos helper para evitar el NullPointerException
+                    datamart.addMatch(new Match(
+                            getString(m, "localTeam"),
+                            getString(m, "visitorTeam"),
+                            getString(m, "matchday"),
+                            m.has("matchStatus") ? m.get("matchStatus").getAsString() : "N/A",
+                            getString(m,"competition"),
+                            getString(m, "airportCode")
+                    ));
+                } else if ((source.equals("flight-feeder") || source.equals("TravelConsumer")) && json.has("flight")) {
+                    JsonObject f = json.getAsJsonObject("flight");
+                    datamart.addFlight(new Flight(
+                            getString(f, "flightNumber"),
+                            getString(f, "airline"),
+                            getString(f, "origin"),
+                            getString(f, "destination"),
+                            getString(f, "departureTime"),
+                            getString(f, "arrivalTime"),
+                            getString(f, "status"),
+                            // Si el vuelo no tiene capturedAt, lo cogemos de la raíz del JSON 'ts'
+                            f.has("capturedAt") ? f.get("capturedAt").getAsString() : json.get("ts").getAsString()
+                    ));
                 }
             }
         } catch (Exception e) {
-                    System.err.println("Error leyendo archivo " + filePath + ": " + e.getMessage());
+            System.err.println("Error procesando archivo " + file.getName() + ": " + e.getMessage());
         }
+    }
+
+    private String getString(JsonObject obj, String key) {
+        return obj.has(key) && !obj.get(key).isJsonNull() ? obj.get(key).getAsString() : "Unknown";
     }
 }
