@@ -98,18 +98,21 @@ public class FlightScraper implements FlightFeeder {
                 String arrIataActual = arrAirport.get("iata").getAsString();
                 if (!arrIataActual.equalsIgnoreCase(arrIata)) continue;
 
-                String flightNumber = f.has("number") ? f.get("number").getAsString().replace(" ", "") : "N/A";
-
                 String depTime = extractTime(f.getAsJsonObject("departure"));
-                String arrTime = extractTime(arrival);
 
+                if (!depTime.contains(date.toString())) {
+                    continue;
+                }
+
+                String flightNumber = f.has("number") ? f.get("number").getAsString().replace(" ", "") : "N/A";
+                String arrTime = extractTime(arrival);
                 String status = f.has("status") ? f.get("status").getAsString().toUpperCase() : "SCHEDULED";
 
                 flights.add(new FlightInfo(flightNumber, depIata, arrIata, depTime, arrTime, status, airline, capturedAt));
             }
 
             System.out.println(">>> [AeroDataBox] " + flights.size()
-                    + " vuelos filtrados (Iberia/Vueling/Ryanair) " + depIata + " -> " + arrIata);
+                    + " vuelos REALES filtrados " + depIata + " -> " + arrIata + " para el " + date);
 
         } catch (Exception e) {
             System.err.println("Error en fetch: " + e.getMessage());
