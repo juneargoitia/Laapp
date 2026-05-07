@@ -8,6 +8,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.awt.Color;
+import java.time.DayOfWeek;
 
 public class View extends JFrame {
     private final Datamart datamart;
@@ -16,6 +20,7 @@ public class View extends JFrame {
     private JTable flightTable;
     private DefaultTableModel matchModel;
     private DefaultTableModel flightModel;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public View(Datamart datamart) {
         this.datamart = datamart;
@@ -29,10 +34,15 @@ public class View extends JFrame {
         setLayout(new BorderLayout());
 
         JPanel topPanel = new JPanel();
+        topPanel.setBackground(new Color(45, 52, 54));
+        JLabel label = new JLabel("Selecciona una fecha: ");
         topPanel.add(new JLabel("Selecciona una fecha: "));
+        label.setForeground(Color.WHITE);
+
+        topPanel.add(label);
 
         dateSelector = new JComboBox<>();
-        updateDates(); // Llenar con las fechas del Datamart
+        updateDates();
         dateSelector.addActionListener(e -> updateMatches());
         topPanel.add(dateSelector);
 
@@ -47,17 +57,18 @@ public class View extends JFrame {
         matchModel = new DefaultTableModel(new String[]{"Local", "Visitante", "Competición", "Estado", "Aeropuerto"}, 0);
         matchTable = new JTable(matchModel);
         matchTable.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting() && matchTable.getSelectedRow() != -1) {
-                showFlightsForSelectedMatch();
+            if (!e.getValueIsAdjusting()) showFlightsForSelectedMatch();
             }
-        });
-        tablesPanel.add(new JScrollPane(matchTable));
+        );
 
-        flightModel = new DefaultTableModel(new String[]{"Vuelo", "Aerolínea", "Origen", "Destino", "Salida", "Llegada", "Estado"}, 0);
+        flightModel = new DefaultTableModel(new String[]{"Vuelo", "Aerolínea", "Origen", "Destino", "Tipo", "Salida", "Llegada", "Estado"}, 0);
         flightTable = new JTable(flightModel);
+        tablesPanel.add(new JScrollPane(matchTable));
         tablesPanel.add(new JScrollPane(flightTable));
 
         add(tablesPanel, BorderLayout.CENTER);
+
+        setLocationRelativeTo(null);
     }
 
     private void updateDates() {
@@ -86,14 +97,61 @@ public class View extends JFrame {
     private void showFlightsForSelectedMatch() {
         flightModel.setRowCount(0);
         int row = matchTable.getSelectedRow();
-        String airportCode = (String) matchModel.getValueAt(row, 4);
+        if (row == -1) return;
 
-        List<Flight> flights = datamart.getFlights(airportCode);
-        for (Flight f : flights) {
-            flightModel.addRow(new Object[]{
-                    f.flightNumber(), f.airline(), f.origin(), f.destination(),
-                    f.departureTime(), f.arrivalTime(), f.status()
-            });
+        String airportCode = (String) matchModel.getValueAt(row, 4);
+        String matchDateStr = (String) dateSelector.getSelectedItem();
+
+        if (airportCode == null || airportCode.equals("N/A")) {
+            JOptionPane.showMessageDialog(this, "No hay aeropuerto asignado para este equipo.");
+            return;
+        }
+
+        List<Flight> allFlights = datamart.getFlights(airportCode);
+        LocalDate matchDate = LocalDate.parse(matchDateStr, formatter);
+
+        LocalDate dayIda;
+        LocalDate dayVuelta;
+
+        if (matchDate.getDayOfWeek() == DayOfWeek.SATURDAY) {
+            dayIda = matchDate.minusDays(1);
+            dayVuelta = matchDate.plusDays(1);
+        } else {
+            dayIda = matchDate;
+            while (dayIda.getDayOfWeek() != DayOfWeek.MONDAY) {
+                dayIda = dayIda.minusDays(1);
+            }
+            dayVuelta = matchDate;
+            while (dayVuelta.getDayOfWeek() != DayOfWeek.THURSDAY) {
+                dayVuelta = dayVuelta.plusDays(1);
+            }
+        }
+        for (Flight f : allFlights) {
+            String flightDateStr = f.departureTime().substring(0, 10);
+            LocalDate flightDate = LocalDate.parse(flightDateStr, formatter);
+
+            boolean isIda = f.origin().equals("MAD") && f.destination().equals(airportCode)
+                    && flightDate.equals(dayIda);
+
+            boolean isVuelta = f.origin().equals(airportCode) && f.destination().equals("MAD")
+                    && flightDate.equals(dayVuelta);
+
+            if (isIda || isVuelta) {
+                String etiqueta = isIda ? "IDA (" + dayIda.getDayOfWeek() + ")" : "VUELTA (" + dayVuelta.getDayOfWeek() + ")";
+                flightModel.addRow(new Object[]{
+                        f.flightNumber(),
+                        f.airline(),
+                        f.origin(),
+                        f.destination(),
+                        etiqueta,
+                        f.departureTime(),
+                        f.status()
+                });
+            }
+        }
+
+        if (flightModel.getRowCount() == 0) {
+            System.out.println("No se encontraron vuelos en el Datamart para " + airportCode + " en esas fechas.");
         }
     }
 }

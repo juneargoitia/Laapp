@@ -41,7 +41,6 @@ public class FlightScraper implements FlightFeeder {
         List<FlightInfo> flights = new ArrayList<>();
 
         flights.addAll(fetchFlights(depIata, arrIata, date, "T00:00", "T11:59"));
-        sleep(2000);
         flights.addAll(fetchFlights(depIata, arrIata, date, "T12:00", "T23:59"));
 
         return flights;
@@ -53,6 +52,8 @@ public class FlightScraper implements FlightFeeder {
 
     private List<FlightInfo> fetchFlights(String depIata, String arrIata, LocalDate date,
                                           String fromSuffix, String toSuffix) {
+        sleep(5000);
+
         List<FlightInfo> flights = new ArrayList<>();
         String capturedAt = Instant.now().toString();
 
