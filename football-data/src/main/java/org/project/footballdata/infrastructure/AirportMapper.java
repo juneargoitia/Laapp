@@ -7,6 +7,7 @@ import java.util.Map;
 
 public class AirportMapper {
     private final Map<String, String> airportMap = new HashMap<>();
+    private final Map<String, String> airportTypeMap = new HashMap<>();
 
     public AirportMapper() {
         loadFromExternalFile();
@@ -18,12 +19,17 @@ public class AirportMapper {
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length == 2) {
-                    airportMap.put(parts[0].trim(), parts[1].trim());
+                    String team = parts[0].trim();
+                    String code = parts[1].trim();
+                    airportMap.put(team, code);
+
+                    String type = (parts.length == 3) ? parts[2].trim().toLowerCase() : "normal";
+                    airportTypeMap.put(team, type);
                 }
             }
             System.out.println("INFO: Cargados " + airportMap.size() + " aeropuertos desde airports.txt");
         } catch (Exception e) {
-            System.err.println("ERROR: No se pudo leer airports.txt. Usando mapa vacío.");
+            System.err.println("ERROR: No se pudo leer airports.txt: " + e.getMessage());
         }
     }
 
@@ -33,6 +39,11 @@ public class AirportMapper {
         }
         return airportMap.getOrDefault(teamName, "N/A");
     }
+
+    public String getType(String teamName) {
+        return airportTypeMap.getOrDefault(teamName, "normal");
+    }
+
     public String getCode(String teamName) {
         return getCode(teamName, "");
     }

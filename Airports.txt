@@ -1,17 +1,17 @@
-Arsenal FC,LHR
-FC Bayern München,MUC
-Liverpool FC,LPL
-Tottenham Hotspur FC,STN
-FC Barcelona,BCN
-Chelsea FC,LGW
-Sporting CP,LIS
-Manchester City FC,MAN
-Real Madrid CF,MAD
-Paris Saint-Germain FC,CDG
-Club Atlético de Madrid,MAD
-Atalanta BC,BGY
-Bayer 04 Leverkusen,CGN
-Galatasaray SK,IST
-FK Bodø/Glimt,BOO
-Newcastle United Football Club, NCL
-Budapest, BUD
+Arsenal FC,LHR,normal
+FC Bayern München,MUC,normal
+Liverpool FC,LPL,normal
+Tottenham Hotspur FC,STN,normal
+FC Barcelona,BCN,normal
+Chelsea FC,LGW,normal
+Sporting CP,LIS,normal
+Manchester City FC,MAN,normal
+Real Madrid CF,MAD,normal
+Paris Saint-Germain FC,CDG,normal
+Club Atlético de Madrid,MAD,normal
+Atalanta BC,BGY,normal
+Bayer 04 Leverkusen,CGN,normal
+Galatasaray SK,IST,normal
+FK Bodø/Glimt,BOO,normal
+Newcastle United Football Club, NCL,normal
+Budapest, BUD,final
