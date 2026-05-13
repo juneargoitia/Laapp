@@ -38,8 +38,8 @@ public class FlightDatabase implements FlightStore {
     public void save(List<FlightInfo> flights) {
         String sql = """
             INSERT INTO flights
-                (flight_number, origin, destination, departure_time, arrival_time, status, airline, captured_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                (flight_number, origin, destination, departure_time, arrival_time, status, airline, captured_at, price)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)
             """;
 
         try (Connection conn = DriverManager.getConnection(URL);
@@ -54,6 +54,7 @@ public class FlightDatabase implements FlightStore {
                 pstmt.setString(6, f.getFlightStatus());
                 pstmt.setString(7, f.getAirline());
                 pstmt.setString(8, f.getCapturedAt());
+                pstmt.setDouble(9, f.getPrice());
                 pstmt.addBatch();
             }
             pstmt.executeBatch();

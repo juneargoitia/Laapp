@@ -38,16 +38,15 @@ public class RecordLoader {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty()) continue; // Salta líneas vacías
+                if (line.trim().isEmpty()) continue;
 
                 JsonObject json = JsonParser.parseString(line).getAsJsonObject();
-                if (!json.has("ss")) continue; // Si no tiene 'ss', no sabemos qué es
+                if (!json.has("ss")) continue;
 
                 String source = json.get("ss").getAsString();
 
                 if (source.equals("football-feeder") && json.has("match")) {
                     JsonObject m = json.getAsJsonObject("match");
-                    // Usamos helper para evitar el NullPointerException
                     datamart.addMatch(new Match(
                             getString(m, "localTeam"),
                             getString(m, "visitorTeam"),
@@ -59,6 +58,7 @@ public class RecordLoader {
                     ));
                 } else if ((source.equals("flight-feeder") || source.equals("TravelConsumer")) && json.has("flight")) {
                     JsonObject f = json.getAsJsonObject("flight");
+                    double price = f.has("price") ? f.get("price").getAsDouble() : 0.0;
                     datamart.addFlight(new Flight(
                             getString(f, "flightNumber"),
                             getString(f, "airline"),
@@ -67,8 +67,8 @@ public class RecordLoader {
                             getString(f, "departureTime"),
                             getString(f, "arrivalTime"),
                             getString(f, "status"),
-                            // Si el vuelo no tiene capturedAt, lo cogemos de la raíz del JSON 'ts'
-                            f.has("capturedAt") ? f.get("capturedAt").getAsString() : json.get("ts").getAsString()
+                            f.has("capturedAt") ? f.get("capturedAt").getAsString() : json.get("ts").getAsString(),
+                            price
                     ));
                 }
             }

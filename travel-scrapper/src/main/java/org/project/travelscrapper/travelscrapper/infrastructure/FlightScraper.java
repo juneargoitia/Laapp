@@ -4,6 +4,7 @@ import com.google.gson.*;
 import org.project.travelscrapper.travelscrapper.core.FlightFeeder;
 import org.project.travelscrapper.travelscrapper.model.FlightInfo;
 
+
 import java.net.URI;
 import java.net.http.*;
 import java.time.Instant;
@@ -109,7 +110,7 @@ public class FlightScraper implements FlightFeeder {
                 String arrTime = extractTime(arrival);
                 String status = f.has("status") ? f.get("status").getAsString().toUpperCase() : "SCHEDULED";
 
-                flights.add(new FlightInfo(flightNumber, depIata, arrIata, depTime, arrTime, status, airline, capturedAt));
+                flights.add(new FlightInfo(flightNumber, depIata, arrIata, depTime, arrTime, status, airline, capturedAt, 0.0));
             }
 
             System.out.println(">>> [AeroDataBox] " + flights.size()

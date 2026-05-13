@@ -8,5 +8,6 @@ public record Flight(
         String departureTime,
         String arrivalTime,
         String status,
-        String capturedAt
+        String capturedAt,
+        double price
 ) {}

@@ -20,6 +20,10 @@ public class View extends JFrame {
     private JComboBox<String> dateSelector;
     private JTable matchTable, departureTable, returnTable;
     private DefaultTableModel matchModel, departureModel, returnModel;
+    private JLabel totalLabel;
+
+    private double selectedDeparturePrice = 0.0;
+    private double selectedReturnPrice = 0.0;
 
     private final Color PRIMARY_BLUE = new Color(0, 51, 102);
     private final Color ACCENT_BLUE = new Color(0, 102, 204);
@@ -51,7 +55,7 @@ public class View extends JFrame {
 
     private void initUI() {
         setTitle("VuelaConTuEquipo - Agencia de Viajes Deportivos");
-        setSize(1300, 850);
+        setSize(1300, 950);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         getContentPane().setBackground(BG_WHITE);
         setLayout(new BorderLayout(15, 15));
@@ -99,22 +103,80 @@ public class View extends JFrame {
 
         mainContent.add(createTablePanel("PARTIDOS DISPONIBLES", matchTable), BorderLayout.NORTH);
 
-        JPanel flightsPanel = new JPanel(new GridLayout(1, 2, 20, 0));
+        JPanel flightsPanel = new JPanel(new BorderLayout(0, 10));
         flightsPanel.setBackground(BG_WHITE);
 
-        departureModel = new DefaultTableModel(new String[]{"Vuelo", "Aerolínea", "Salida", "Llegada"}, 0);
+        JPanel tablesPanel = new JPanel(new GridLayout(1, 2, 20, 0));
+        tablesPanel.setBackground(BG_WHITE);
+
+        departureModel = new DefaultTableModel(new String[]{"Vuelo", "Aerolínea", "Salida", "Llegada", "Precio (USD)"}, 0);
         departureTable = createNonEditableTable(departureModel, new Color(40, 167, 69));
+        departureTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) updateTotal();
+        });
 
-        returnModel = new DefaultTableModel(new String[]{"Vuelo", "Aerolínea", "Salida", "Llegada"}, 0);
+        returnModel = new DefaultTableModel(new String[]{"Vuelo", "Aerolínea", "Salida", "Llegada", "Precio (USD)"}, 0);
         returnTable = createNonEditableTable(returnModel, new Color(220, 53, 69));
+        returnTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) updateTotal();
+        });
 
-        flightsPanel.add(createTablePanel("VUELOS DE IDA (A DESTINO)", departureTable));
-        flightsPanel.add(createTablePanel("VUELOS DE VUELTA (A MADRID)", returnTable));
+        tablesPanel.add(createTablePanel("VUELOS DE IDA (A DESTINO)", departureTable));
+        tablesPanel.add(createTablePanel("VUELOS DE VUELTA (A MADRID)", returnTable));
+        flightsPanel.add(tablesPanel, BorderLayout.CENTER);
 
+        JPanel totalPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        totalPanel.setBackground(new Color(240, 248, 255));
+        totalPanel.setBorder(BorderFactory.createLineBorder(ACCENT_BLUE, 1));
+
+        totalLabel = new JLabel("Selecciona un vuelo de ida y uno de vuelta para ver el precio total");
+        totalLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        totalLabel.setForeground(PRIMARY_BLUE);
+        totalPanel.add(totalLabel);
+
+        flightsPanel.add(totalPanel, BorderLayout.SOUTH);
         mainContent.add(flightsPanel, BorderLayout.CENTER);
         add(mainContent, BorderLayout.CENTER);
 
         setLocationRelativeTo(null);
+    }
+
+    private void updateTotal() {
+        int depRow = departureTable.getSelectedRow();
+        int retRow = returnTable.getSelectedRow();
+
+        if (depRow != -1) {
+            selectedDeparturePrice = parsePrice((String) departureModel.getValueAt(depRow, 4));
+        }
+        if (retRow != -1) {
+            selectedReturnPrice = parsePrice((String) returnModel.getValueAt(retRow, 4));
+        }
+
+        if (depRow != -1 && retRow != -1) {
+            double total = selectedDeparturePrice + selectedReturnPrice;
+            totalLabel.setText(String.format(
+                    "✈ Ida: $%.2f  +  ↩ Vuelta: $%.2f  =  TOTAL VIAJE: $%.2f USD",
+                    selectedDeparturePrice, selectedReturnPrice, total
+            ));
+            totalLabel.setForeground(new Color(0, 128, 0));
+        } else if (depRow != -1) {
+            totalLabel.setText(String.format("✈ Ida seleccionada: $%.2f — Selecciona también un vuelo de vuelta", selectedDeparturePrice));
+            totalLabel.setForeground(ACCENT_BLUE);
+        } else if (retRow != -1) {
+            totalLabel.setText(String.format("↩ Vuelta seleccionada: $%.2f — Selecciona también un vuelo de ida", selectedReturnPrice));
+            totalLabel.setForeground(ACCENT_BLUE);
+        } else {
+            totalLabel.setText("Selecciona un vuelo de ida y uno de vuelta para ver el precio total");
+            totalLabel.setForeground(PRIMARY_BLUE);
+        }
+    }
+
+    private double parsePrice(String priceStr) {
+        try {
+            return Double.parseDouble(priceStr.replace(",", ".").trim());
+        } catch (Exception e) {
+            return 0.0;
+        }
     }
 
     private JTable createNonEditableTable(DefaultTableModel model, Color headerColor) {
@@ -161,23 +223,20 @@ public class View extends JFrame {
         matchModel.setRowCount(0);
         departureModel.setRowCount(0);
         returnModel.setRowCount(0);
+        selectedDeparturePrice = 0.0;
+        selectedReturnPrice = 0.0;
+        totalLabel.setText("Selecciona un vuelo de ida y uno de vuelta para ver el precio total");
+        totalLabel.setForeground(PRIMARY_BLUE);
 
         String selectedDate = (String) dateSelector.getSelectedItem();
         if (selectedDate == null) return;
 
-        List<Match> matches = datamart.getMatches(selectedDate);
-
-        for (Match m : matches) {
+        for (Match m : datamart.getMatches(selectedDate)) {
             String cityName = cityNames.getOrDefault(m.airportCode().toUpperCase(), m.airportCode());
-
             String time = (m.matchDate() != null) ? m.matchDate().substring(0, 5) : "N/A";
             matchModel.addRow(new Object[]{
-                    m.localTeam(),
-                    m.visitorTeam(),
-                    m.matchStatus(),
-                    time,
-                    m.competition(),
-                    cityName
+                    m.localTeam(), m.visitorTeam(), m.matchStatus(),
+                    time, m.competition(), cityName
             });
         }
     }
@@ -185,6 +244,11 @@ public class View extends JFrame {
     private void showFlightsForSelectedMatch() {
         departureModel.setRowCount(0);
         returnModel.setRowCount(0);
+        selectedDeparturePrice = 0.0;
+        selectedReturnPrice = 0.0;
+        totalLabel.setText("Selecciona un vuelo de ida y uno de vuelta para ver el precio total");
+        totalLabel.setForeground(PRIMARY_BLUE);
+
         int row = matchTable.getSelectedRow();
         if (row == -1) return;
 
@@ -202,10 +266,21 @@ public class View extends JFrame {
         if (trip == null) return;
 
         for (Flight f : trip.getDepartureFlights()) {
-            departureModel.addRow(new Object[]{f.flightNumber(), f.airline(), f.departureTime().substring(11, 16), f.arrivalTime().substring(11, 16)});
+            departureModel.addRow(new Object[]{
+                    f.flightNumber(), f.airline(),
+                    f.departureTime().substring(11, 16),
+                    f.arrivalTime().substring(11, 16),
+                    String.format("%.2f", f.price())
+            });
         }
+
         for (Flight f : trip.getReturnFlights()) {
-            returnModel.addRow(new Object[]{f.flightNumber(), f.airline(), f.departureTime().substring(11, 16), f.arrivalTime().substring(11, 16)});
+            returnModel.addRow(new Object[]{
+                    f.flightNumber(), f.airline(),
+                    f.departureTime().substring(11, 16),
+                    f.arrivalTime().substring(11, 16),
+                    String.format("%.2f", f.price())
+            });
         }
     }
 }

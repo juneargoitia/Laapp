@@ -9,10 +9,11 @@ public class FlightInfo {
     private final String flightStatus;
     private final String airline;
     private final String capturedAt;
+    private final double price;
 
     public FlightInfo(
             String flightNumber, String origin, String destination, String departureTime,
-            String arrivalTime, String flightStatus, String airline, String capturedAt
+            String arrivalTime, String flightStatus, String airline, String capturedAt, double price
     ) {
         this.flightNumber = flightNumber;
         this.origin = origin;
@@ -22,6 +23,7 @@ public class FlightInfo {
         this.flightStatus = flightStatus;
         this.airline = airline;
         this.capturedAt = capturedAt;
+        this.price = price;
     }
 
     public String getFlightNumber() {
@@ -48,4 +50,5 @@ public class FlightInfo {
     public String getCapturedAt() {
         return capturedAt;
     }
+    public double getPrice() {return price;}
 }

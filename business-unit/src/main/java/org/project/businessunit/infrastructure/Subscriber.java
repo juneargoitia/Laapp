@@ -61,6 +61,7 @@ public class Subscriber {
             ));
         } else {
             JsonObject f = event.getAsJsonObject("flight");
+            double price = f.has("price") ? f.get("price").getAsDouble() : 0.0;
             datamart.addFlight(new Flight(
                     f.get("flightNumber").getAsString(),
                     f.get("airline").getAsString(),
@@ -69,7 +70,8 @@ public class Subscriber {
                     f.get("departureTime").getAsString(),
                     f.get("arrivalTime").getAsString(),
                     f.get("status").getAsString(),
-                    f.get("capturedAt").getAsString()
+                    f.get("capturedAt").getAsString(),
+                    price
             ));
         }
     }
