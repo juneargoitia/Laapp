@@ -10,8 +10,8 @@ Real Madrid CF,MAD,normal
 Paris Saint-Germain FC,CDG,normal
 Club Atlético de Madrid,MAD,normal
 Atalanta BC,BGY,normal
-Bayer 04 Leverkusen,CGN,normal
+Bayer 04 Leverkusen,DUS,normal
 Galatasaray SK,IST,normal
-FK Bodø/Glimt,BOO,normal
-Newcastle United Football Club, NCL,normal
+FK Bodø/Glimt,OSL,normal
+Newcastle United Football Club,EDI,normal
 Budapest, BUD,final

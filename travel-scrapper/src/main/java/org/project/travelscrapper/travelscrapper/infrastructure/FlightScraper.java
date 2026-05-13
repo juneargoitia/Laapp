@@ -14,7 +14,7 @@ import java.util.List;
 
 public class FlightScraper implements FlightFeeder {
 
-    private static final List<String> ALLOWED_AIRLINES = Arrays.asList("RYANAIR", "VUELING", "IBERIA");
+    private static final List<String> ALLOWED_AIRLINES = Arrays.asList("RYANAIR", "VUELING", "IBERIA", "TURKISH");
 
     private String getApiKey() {
         String key = System.getenv("AERODATABOX_API_KEY");
