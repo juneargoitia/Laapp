@@ -9,9 +9,14 @@ import org.project.footballdata.core.FootballFeeder;
 
 public class Main {
     public static void main(String[] args) {
+        String brokerUrl = (args.length > 0) ? args[0] :
+                System.getenv().getOrDefault("BROKER_URL", "tcp://localhost:61616");
+
         FootballFeeder feeder = new FootballClient();
-        FootballStore store = new FootballPublisher();
+        FootballStore store = new FootballPublisher(brokerUrl);
         FootballController controller = new FootballController(feeder, store);
+        System.out.println("=== MÓDULO FOOTBALL-DATA INICIADO (Broker: " + brokerUrl + ") ===");
+
         controller.start();
     }
 }

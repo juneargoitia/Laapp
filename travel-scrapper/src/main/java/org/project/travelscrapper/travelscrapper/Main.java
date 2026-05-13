@@ -10,8 +10,11 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
+        String brokerUrl = (args.length > 0) ? args[0] :
+                System.getenv().getOrDefault("BROKER_URL", "tcp://localhost:61616");
+
         FlightScraper feeder = new FlightScraper();
-        FlightPublisher store = new FlightPublisher();
+        FlightPublisher store = new FlightPublisher(brokerUrl);
         FlightController controller = new FlightController(feeder, store);
 
         List<DestinationInfo> destinations = new ArrayList<>();
@@ -28,7 +31,7 @@ public class Main {
         } catch (Exception e) {
             System.err.println("Error leyendo airports.txt: " + e.getMessage());
         }
-        System.out.println("=== MÓDULO TRAVEL-SCRAPPER INICIADO (MODO INDEPENDIENTE) ===");
+        System.out.println("=== MÓDULO TRAVEL-SCRAPPER INICIADO (Broker: " + brokerUrl + ") ===");
         controller.execute(destinations);
     }
 }

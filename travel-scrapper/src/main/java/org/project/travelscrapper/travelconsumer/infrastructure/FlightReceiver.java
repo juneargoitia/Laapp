@@ -5,16 +5,20 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import javax.jms.*;
 
 public class FlightReceiver {
-    private static final String BROKER_URL = "tcp://localhost:61616";
+    private final String brokerUrl;
     private static final String TRAVEL_TOPIC = "Travel";
     private static final String FOOTBALL_TOPIC = "Football";
 
     private final Gson gson = new Gson();
     private final EventStore eventStore = new EventStore();
 
+    public FlightReceiver(String brokerUrl) {
+        this.brokerUrl = brokerUrl;
+    }
+
     public void startListening() {
         try {
-            ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(BROKER_URL);
+            ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(brokerUrl);
 
             Connection connection = factory.createConnection();
             connection.setClientID("EventStore-GlobalBuilder");
@@ -33,7 +37,7 @@ public class FlightReceiver {
             System.out.println("----------------------------------------------");
             System.out.println("    EVENT STORE BUILDER: ESCUCHANDO EVENTOS    ");
             System.out.println("  Topics: " + FOOTBALL_TOPIC + " y " + TRAVEL_TOPIC);
-            System.out.println("  Broker: " + BROKER_URL);
+            System.out.println("  Broker: " + brokerUrl);
             System.out.println("----------------------------------------------");
 
         } catch (Exception e) {

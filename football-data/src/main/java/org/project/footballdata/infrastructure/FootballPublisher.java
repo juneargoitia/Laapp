@@ -11,10 +11,14 @@ import java.util.List;
 
 
 public class FootballPublisher implements FootballStore {
-    private final String brokerUrl = "tcp://localhost:61616";
+    private final String brokerUrl;
     private final String topicName = "Football";
     private final Gson gson = new Gson();
     private final AirportMapper mapper = new AirportMapper();
+
+    public FootballPublisher(String brokerUrl) {
+        this.brokerUrl = brokerUrl;
+    }
 
     @Override
     public void save(List<Match> matches) {
@@ -31,18 +35,16 @@ public class FootballPublisher implements FootballStore {
             for (Match m : matches) {
                 String code = mapper.getCode(m.getLocalTeam(), m.getMatchday());
                 m.setAirportCode(code);
-
                 FootballEvent event = new FootballEvent(m);
                 String json = gson.toJson(event);
 
                 TextMessage message = session.createTextMessage(json);
                 producer.send(message);
-
-                System.out.println("Publicado: " + json);
+                System.out.println("Publicado en " + brokerUrl + ": " + json);
             }
 
         } catch (JMSException e) {
-            System.err.println("Error enviando a ActiveMQ: " + e.getMessage());
+            System.err.println("Error enviando a Broker: " + e.getMessage());
         } finally {
             try {
                 if (connection != null) connection.close();

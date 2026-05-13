@@ -9,11 +9,12 @@ import org.project.businessunit.model.Match;
 import javax.jms.*;
 
 public class Subscriber {
-    private final String brokerUrl = "tcp://localhost:61616";
+    private final String brokerUrl;
     private final Datamart datamart;
 
-    public Subscriber(Datamart datamart) {
+    public Subscriber(Datamart datamart, String brokerUrl) {
         this.datamart = datamart;
+        this.brokerUrl = brokerUrl;
     }
 
     public void start() {
@@ -22,15 +23,14 @@ public class Subscriber {
             Connection connection = factory.createConnection();
             connection.setClientID("BusinessUnit-RT-" + System.currentTimeMillis());
             connection.start();
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             setupConsumer(session, "Football");
             setupConsumer(session, "Travel");
 
-            System.out.println(">>> Escuchando eventos en tiempo real...");
+            System.out.println(">>> Conectado al Broker: " + brokerUrl);
         } catch (JMSException e) {
-            System.err.println(">>> ERROR: No se pudo conectar con el Broker ActiveMQ.");
-            System.err.println("Detalle: " + e.getMessage());
+            System.err.println(">>> ERROR: No se pudo conectar con " + brokerUrl);
         }
     }
 

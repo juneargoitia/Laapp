@@ -8,18 +8,20 @@ import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
+        String brokerUrl = (args.length > 0) ? args[0] :
+                System.getenv().getOrDefault("BROKER_URL", "tcp://localhost:61616");
+
         Datamart datamart = new Datamart();
 
-        System.out.println(">>> Cargando eventos históricos...");
         RecordLoader loader = new RecordLoader(datamart);
         loader.loadAll("eventstore");
 
-        Subscriber subscriber = new Subscriber(datamart);
+        Subscriber subscriber = new Subscriber(datamart, brokerUrl);
         subscriber.start();
 
         SwingUtilities.invokeLater(() -> {
             View view = new View(datamart);
-            view.setVisible(true); // O view.display() si es por consola
+            view.setVisible(true);
             System.out.println("=== INTERFAZ DE USUARIO INICIADA ===");
         });
 
