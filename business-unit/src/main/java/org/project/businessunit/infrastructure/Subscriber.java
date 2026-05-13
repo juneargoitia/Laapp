@@ -54,6 +54,7 @@ public class Subscriber {
                     m.get("localTeam").getAsString(),
                     m.get("visitorTeam").getAsString(),
                     m.get("matchday").getAsString(),
+                    m.get("matchDate").getAsString(),
                     m.get("matchStatus").getAsString(),
                     m.get("competition").getAsString(),
                     m.get("airportCode").getAsString().toUpperCase()

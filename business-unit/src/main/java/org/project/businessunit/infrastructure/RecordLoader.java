@@ -52,6 +52,7 @@ public class RecordLoader {
                             getString(m, "localTeam"),
                             getString(m, "visitorTeam"),
                             getString(m, "matchday"),
+                            getString(m, "matchDate"),
                             m.has("matchStatus") ? m.get("matchStatus").getAsString() : "N/A",
                             getString(m,"competition"),
                             getString(m, "airportCode")
